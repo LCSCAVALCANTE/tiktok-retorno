@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Retorno do TikTok</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 32px 16px; }
+  main { max-width: 640px; margin: 0 auto; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 120px; background: #1d1d1d; color: #eee;
+             border: 1px solid #444; border-radius: 8px; padding: 12px; font: 14px monospace; }
+  button { margin-top: 12px; padding: 10px 18px; border: 0; border-radius: 8px; background: #fe2c55; color: #fff;
+           font-size: 16px; cursor: pointer; }
+  .erro { color: #ff8080; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Autorização do TikTok</h1>
+  <p id="msg">Copie o endereço abaixo e cole no painel (barra "TikTok" → "Salvar conexão").</p>
+  <textarea id="url" readonly></textarea>
+  <button id="copiar" type="button">Copiar</button>
+  <p><small>Esta página não envia nada para lugar nenhum: o código só aparece aqui, e vale por poucos minutos.</small></p>
+</main>
+<script>
+  // Página estática de retorno do OAuth do TikTok (o painel local roda em http e o TikTok exige https).
+  const params = new URLSearchParams(location.search);
+  const campo = document.getElementById('url');
+  campo.value = location.href;
+  if (params.get('error')) {
+    document.getElementById('msg').textContent = 'O TikTok recusou a autorização: ' + params.get('error');
+    document.getElementById('msg').className = 'erro';
+  } else if (!params.get('code')) {
+    document.getElementById('msg').textContent = 'Nenhum código neste endereço. Comece pelo botão "Conectar" do painel.';
+  }
+  document.getElementById('copiar').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(campo.value); } catch { campo.select(); document.execCommand('copy'); }
+    document.getElementById('copiar').textContent = 'Copiado';
+  });
+</script>
+</body>
+</html>
